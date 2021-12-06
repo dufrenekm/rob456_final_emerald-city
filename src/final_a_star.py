@@ -76,12 +76,6 @@ class graphDataStructure:
                     self.isOccupied[x, y] = 1
             # 254 is yellow - open space
 
-    def threshold(self):
-        # This will output the threshold image
-        plt.imshow(self.isOccupied)
-        plt.savefig('part2.png', bbox_inches='tight')
-        plt.show()
-
     def nodes(self):
         # This generates the node array and sets it to infinity
         self.nodes = np.full((len(self.img[0]), len(self.img[1])), np.inf)
@@ -129,7 +123,6 @@ class floodFill():
         # Set up graph data structure
         self.dataStructure = graphDataStructure()
         self.dataStructure.occupyBuild()
-        self.dataStructure.threshold()
         self.dataStructure.nodes()
 
         self.x_star = []
@@ -177,7 +170,7 @@ class floodFill():
 
         return marker_locations
 
-    def pop_zeros(self,list_items):
+    def pop_zeros(self, list_items):
         while list_items[-1] == 0:
             list_items.pop()
         return list_items
@@ -213,7 +206,6 @@ class floodFill():
             queue_val = self.priQueue.show()
             # Get the matrix of valid neighboring pixels
             neighbors = self.dataStructure.checkPixel(queue_val[0])
-            dist = queue_val[0][2]
 
             imageArray[int(queue_val[0][0])][int(queue_val[0][1])] = queue_val[1]
             self.priQueue.delete()
@@ -234,16 +226,15 @@ class floodFill():
         abs_vals = np.absolute(imageArray)
         max_val = np.max(abs_vals)
         updated_image = abs_vals / max_val * 255
-        plt.imshow(np.absolute(updated_image))
+        #plt.imshow(np.absolute(updated_image))
 
         # Work backwards for path
-        print('test',end_pixel_loc, pixel_loc)
         mark_loc = self.work_backwards(abs_vals, end_pixel_loc, pixel_loc)
 
         # Get x and y values (note reversed from typical)
         x_vals = [row[0] for row in mark_loc]
         y_vals = [row[1] for row in mark_loc]
-        plt.scatter(y_vals[0:], x_vals[0:], color='red', marker='.')
+        #plt.scatter(y_vals[0:], x_vals[0:], color='red', marker='.')
         ######## Make room for wall turns etc
         path_length = range(len(mark_loc))
         count = 0
@@ -283,11 +274,11 @@ class floodFill():
             count += 1
             pix_dist = count - prev_count
             if pix_dist >= pix_expand:
-                plt.scatter(y_vals[i], x_vals[i], color='black', marker='.')
+         #       plt.scatter(y_vals[i], x_vals[i], color='black', marker='.')
                 prev_count = count
                 self.x_star, self.y_star = check_for_obstical(y_vals[i], x_vals[i], width, offset, self.x_star, self.y_star)
-        plt.scatter(self.y_star, self.x_star, color='blue', marker='.')
-        plt.show()
+       # plt.scatter(self.y_star, self.x_star, color='blue', marker='.')
+       # plt.show()
 
 # def map_odom_xy(data):
 #     pose = Pose()
@@ -304,6 +295,4 @@ if __name__ == '__main__':
     #rospy.init_node('map_odom_output_x_y')
     #rospy.Subscriber('/map_odom', Pose, map_odom_xy)
     fill = floodFill()
-    print(tuple([-3, -3]))
-    print(np.asarray(tuple([-3, -3])))
     fill.flood_fill_do(tuple([-3.4, -3.4]), tuple([-3.7, -6.35]))
